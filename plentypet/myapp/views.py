@@ -1,12 +1,27 @@
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+
 from .models import Course
+
 
 def home(request):
     return HttpResponse("Hello, Django!")
 
 
 def course_detail(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
-    return render(request, 'myapp/course_detail.html', {'course': course})
+    try:
+        course = Course.objects.get(pk=course_id)
+        return render(
+            request,
+            "courses/course_detail.html",
+            {
+                "course": {
+                    "title": course.title,
+                    "description": course.description,
+                    "created_at": str(course.created_at),
+                    "pk": course.pk,
+                }
+            },
+        )
+    except:
+        return HttpResponseRedirect("/")
